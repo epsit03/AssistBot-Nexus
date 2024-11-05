@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AssistBot Nexus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+       body {
+    background-color: #f0f2f5;
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: #333;
+}
+
+.sidebar {
+    width: 250px;
+    background: linear-gradient(180deg, #4e4e4e, #2c2c2c);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    height: 100vh;
+    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h2 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #e0e0e0;
+    margin-bottom: 10px;
+}
+
+.chat-history {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.chat-history-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    background: linear-gradient(145deg, #333, #444);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+    color: #ddd;
+}
+
+.chat-history-item:hover {
+    background: linear-gradient(145deg, #555, #666);
+}
+
+.new-chat-button {
+    padding: 10px;
+    background: #555;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.new-chat-button:hover {
+    background: #666;
+}
+
+.chat-container {
+    flex-grow: 1;
+    max-width: 600px;
+    margin: auto;
+    border-radius: 12px;
+    background: #f9f9f9;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 90vh;
+}
+
+.chat-title {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 15px;
+}
+
+.chat-messages {
+    height: 100%;
+    overflow-y: auto;
+    padding: 15px;
+    background: #e5e5e5;
+    margin-bottom: 15px;
+    border: 1px solid #d0d4d8;
+    border-radius: 10px;
+}
+
+.chat-messages p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #333;
+    word-wrap: break-word;
+}
+
+.typing-indicator {
+    font-size: 14px;
+    color: #888;
+    display: none;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.quick-replies {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.quick-replies button {
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    background: #555;
+    color: #f0f0f0;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.3s;
+}
+
+.quick-replies button:hover {
+    background: #666;
+}
+
+.chat-input {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.chat-input textarea {
+    resize: none;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 14px;
+    flex-grow: 1;
+    background-color: #f5f5f5;
+    transition: border-color 0.2s;
+}
+
+.chat-input textarea:focus {
+    border-color: #888;
+    box-shadow: 0 0 5px rgba(136, 136, 136, 0.2);
+}
+
+.chat-input button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: #444;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.chat-input button:hover {
+    background-color: #333;
+}
+
+.email-transcript {
+            font-size: 12px;
+            text-align: right;
+            margin-top: 10px;
+            color: #007bff;
+            cursor: pointer;
+        }
+
+.email-transcript:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Chat History</h2>
+        <div class="chat-history" id="chat-history"></div>
+        <button class="new-chat-button" onclick="startNewChat()">New Chat</button>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-title">AssistBot Nexus</div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="typing-indicator" id="typing-indicator">AssistBot Nexus (your 24x7 hours available query-support friend) is typing...</div>
+
+        <!-- Quick Reply Buttons -->
+        <div class="quick-replies">
+          <button onclick="quickReply('I need help with my account.')">Account Help</button>
+          <button onclick="quickReply('How do I troubleshoot my app?')">Troubleshoot</button>
+          <button onclick="quickReply('Can you tell me about your products?')">Product Info</button>
+      </div>
+
+        <div class="chat-input">
+            <textarea id="user-input" placeholder="Type your message... (Shift+Enter for new line)" rows="2"></textarea>
+            <button onclick="sendMessage()">Send</button>
+        </div>
+
+         <!-- Email Transcript Option -->
+         <div class="email-transcript" onclick="emailTranscript()">Email chat transcript</div>
+    </div>
+    
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const chatHistory = document.getElementById('chat-history');
+        const userInput = document.getElementById('user-input');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const initialPrompt = "Suppose you are a professional colleague. You are a highly efficient, professional customer support assistant for a software technology company. Your task is to understand customer inquiries about our software products and provide clear, accurate responses without additional suggestions. If the query requires escalation, ask for more details concisely. Maintain a polite and professional tone at all times. What would you reply to this message? Only give the reply, please.";
+
+        let chatSessions = JSON.parse(localStorage.getItem('chatSessions')) || [];
+        let currentSession = [];
+
+        userInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();  // Prevent new line
+                sendMessage();  // Send the message
+            }
+        });
+
+        function updateChatHistory() {
+            chatHistory.innerHTML = '';
+            chatSessions.forEach((session, index) => {
+                const sessionItem = document.createElement('div');
+                sessionItem.className = 'chat-history-item';
+                sessionItem.textContent = `Chat ${index + 1}`;
+                sessionItem.onclick = () => loadChatSession(index);
+                chatHistory.appendChild(sessionItem);
+            });
+        }
+
+        function loadChatSession(index) {
+            chatMessages.innerHTML = '';
+            currentSession = chatSessions[index];
+            currentSession.forEach(message => addMessage(message.text, message.sender));
+        }
+
+        function quickReply(text) {
+            userInput.value = text;
+        }
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('p');
+            messageDiv.textContent = `${sender}: ${text}`;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            currentSession.push({ text, sender });
+        }
+
+        async function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (userMessage === "") return;  // Prevent empty messages
+
+            addMessage(userMessage, 'You');
+            typingIndicator.style.display = 'block';  // Show typing indicator
+
+            const prompt = initialPrompt + userMessage;
+
+            try {
+                const requestBody = JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: prompt
+                        }]
+                    }]
+                });
+
+                const apiKey = 'AIzaSyBixi3ocgjmN-i97is8oAuGIzTfPKYIawk';
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: requestBody
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const botMessage = data.candidates[0].content.parts[0].text;
+
+                addMessage(botMessage, 'Epsit');
+                <!-- showRatingOptions() --> // Show rating options after response
+            } catch (error) {
+                addMessage(`Error: ${error.message}`, 'System');
+            } finally {
+                userInput.value = '';  // Clear the textarea
+                typingIndicator.style.display = 'none';  // Hide typing indicator
+            }
+        }
+
+        function startNewChat() {
+            if (currentSession.length > 0) chatSessions.push([...currentSession]);
+
+            localStorage.setItem('chatSessions', JSON.stringify(chatSessions));
+            currentSession = [];
+            chatMessages.innerHTML = '';
+            userInput.value = '';
+            updateChatHistory();
+        }
+        
+        function emailTranscript() {
+    // Get the chat sessions from localStorage
+    const chatSessions = JSON.parse(localStorage.getItem('chatSessions')) || [];
+
+    // Check if there are any sessions to download
+    if (chatSessions.length === 0) {
+        alert('No messages to download.');
+        return;  // Exit if there are no messages
+    }
+
+    // Prepare a transcript of all messages from the sessions
+    const transcript = chatSessions.map((session, index) => 
+        `Session ${index + 1}:\n` + // Add session number
+        session.map(m => `${m.sender}: ${m.text}`).join('\n') // Format each message
+    ).join('\n\n'); // Joining sessions with double new lines for separation
+
+    // Create a Blob for the transcript
+    const blob = new Blob([transcript], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'chat_transcript.txt'; // Specify the file name
+
+    document.body.appendChild(a);
+    a.click();
+
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+
+
+        window.addEventListener('load', updateChatHistory);
+    </script>
+</body>
+</html>
