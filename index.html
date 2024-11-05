@@ -25,6 +25,11 @@
     box-sizing: border-box;
     height: 100vh;
     box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    transform: translateX(0); /* Show by default */
+}
+.sidebar.hidden {
+    transform: translateX(-100%) !important;/* Hide the sidebar */
 }
 
 .sidebar h2 {
@@ -71,7 +76,7 @@
 }
 
 .chat-container {
-    flex-grow: 1;
+    flex: 1;
     max-width: 600px;
     margin: auto;
     border-radius: 12px;
@@ -191,13 +196,15 @@
     </style>
 </head>
 <body>
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <h2>Chat History</h2>
         <div class="chat-history" id="chat-history"></div>
         <button class="new-chat-button" onclick="startNewChat()">New Chat</button>
     </div>
+    
 
     <div class="chat-container">
+        <button id="toggle-button">Toggle Sidebar</button>
         <div class="chat-title">AssistBot Nexus</div>
         <div class="chat-messages" id="chat-messages"></div>
         <div class="typing-indicator" id="typing-indicator">AssistBot Nexus (your 24x7 hours available query-support friend) is typing...</div>
@@ -352,8 +359,10 @@
     URL.revokeObjectURL(url);
 }
 
-
-
+document.getElementById('toggle-button').addEventListener('click', function() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('hidden'); // Toggle the hidden class
+});
         window.addEventListener('load', updateChatHistory);
     </script>
 </body>
