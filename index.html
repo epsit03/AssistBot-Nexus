@@ -193,18 +193,52 @@
 .email-transcript:hover {
             text-decoration: underline;
         }
+
+    #toggle-button {
+    background-color: rgba(35, 35, 35, 0.554);
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+#toggle-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#toggle-button svg path {
+    stroke: #ffffff;
+    transition: stroke 0.3s;
+}
+
+#toggle-button:hover svg path {
+    stroke: #000000;
+}
+
     </style>
 </head>
 <body>
     <div class="sidebar" id="sidebar">
-        <h2>Chat History</h2>
+        <h2 style="margin-top: 48px;">Chat History</h2>
         <div class="chat-history" id="chat-history"></div>
         <button class="new-chat-button" onclick="startNewChat()">New Chat</button>
     </div>
     
 
     <div class="chat-container">
-        <button id="toggle-button">Toggle Sidebar</button>
+        <!-- Professional Icon Button for Toggling Sidebar -->
+<button id="toggle-button">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 6H21" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <path d="M3 12H21" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <path d="M3 18H21" stroke="white" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+</button>
+
         <div class="chat-title">AssistBot Nexus</div>
         <div class="chat-messages" id="chat-messages"></div>
         <div class="typing-indicator" id="typing-indicator">AssistBot Nexus (your 24x7 hours available query-support friend) is typing...</div>
